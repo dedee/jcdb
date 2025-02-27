@@ -1,5 +1,7 @@
 # JCDB - Java CDB Implementation
 
+https://github.com/dedee/jcdb/actions/workflows/build.yml/badge.svg
+
 ## Overview
 A Java implementation of Constant Database (CDB), a fast and reliable hash table mechanism for key-value storage originally designed by Daniel J. Bernstein. This implementation focuses on modern Java practices and concurrent access patterns.
 
