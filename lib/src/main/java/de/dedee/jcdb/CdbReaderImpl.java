@@ -1,11 +1,12 @@
 package de.dedee.jcdb;
 
-import java.io.*;
+import java.io.IOException;
 import java.nio.channels.FileChannel;
-import java.util.*;
+import java.util.Iterator;
+import java.util.Objects;
 
 class CdbReaderImpl implements CdbReader {
-   
+
     private final FileChannel channel;
     private final int[] slotTable;
 
@@ -25,7 +26,7 @@ class CdbReaderImpl implements CdbReader {
     }
 
     @Override
-    public Iterator<byte[]> find(byte[] key)  {
+    public Iterator<byte[]> find(byte[] key) {
         return new CdbReaderResultIterator(channel, key, slotTable);
     }
 
