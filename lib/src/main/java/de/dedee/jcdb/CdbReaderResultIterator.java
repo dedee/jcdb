@@ -29,7 +29,7 @@ import java.util.Objects;
  * }
  * </pre>
  */
-class CdbIterator implements Iterator<byte[]>, AutoCloseable {
+class CdbReaderResultIterator implements Iterator<byte[]>, AutoCloseable {
     /**
      * Size of each hash table entry in bytes (4 bytes for hash + 4 bytes for position)
      */
@@ -98,7 +98,7 @@ class CdbIterator implements Iterator<byte[]>, AutoCloseable {
      * @param slotTable The slot table containing hash table positions and sizes
      * @throws NullPointerException if any parameter is null
      */
-    CdbIterator(FileChannel channel, byte[] key, int[] slotTable) {
+    CdbReaderResultIterator(FileChannel channel, byte[] key, int[] slotTable) {
         this.channel = Objects.requireNonNull(channel, "Channel cannot be null");
         this.key = Objects.requireNonNull(key, "Key cannot be null");
         this.slotTable = Objects.requireNonNull(slotTable, "Slot table cannot be null");

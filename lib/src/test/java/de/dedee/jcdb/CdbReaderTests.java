@@ -11,7 +11,7 @@ import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-public class CdbTest {
+public class CdbReaderTests {
 
     private static final String TEST_CDB_PATH = "test.cdb";
 

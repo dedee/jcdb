@@ -39,6 +39,6 @@ public interface CdbReader extends AutoCloseable {
      * @throws IOException if an I/O error occurs while opening or reading the file
      */
     static CdbReader create(Path path) throws IOException {
-        return new Cdb(FileChannel.open(path, StandardOpenOption.READ));
+        return new CdbReaderImpl(FileChannel.open(path, StandardOpenOption.READ));
     }
 } 

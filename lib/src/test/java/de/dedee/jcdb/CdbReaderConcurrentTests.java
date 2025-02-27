@@ -21,7 +21,7 @@ import java.util.stream.IntStream;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class CdbConcurrentTest {
+public class CdbReaderConcurrentTests {
     private static final String TEST_CDB_PATH = "test_concurrent.cdb";
 
     @BeforeAll
