@@ -29,8 +29,8 @@ final class CdbUtil {
 
     static int hash(byte[] key) {
         int h = 5381;
-        for (int i = 0; i < key.length; i++) {
-            h = (h + (h << 5)) ^ (key[i] & 0xff);
+        for (byte b : key) {
+            h = (h + (h << 5)) ^ (b & 0xff);
         }
         return h;
     }

@@ -210,9 +210,9 @@ class CdbReaderResultIterator implements Iterator<byte[]>, AutoCloseable {
         ByteBuffer buffer = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN);
         buffer.clear();
 
-        // NOTE: Always add position here cause we do not want to synchronize channel access.
-        // Otherwise you need to take care of syncing across the threads.
-        // Whereas such a read doesnt update channels pos.
+        // NOTE: Always add position here because we do not want to synchronize channel access.
+        // Otherwise, you need to take care of syncing across the threads.
+        // Whereas such a read doesn't update channels pos.
         channel.read(buffer, keyPos);
         buffer.flip();
         int hash = buffer.getInt();

@@ -24,7 +24,7 @@ public class CdbReaderConcurrentTests {
     private static final String TEST_CDB_PATH = "test_concurrent.cdb";
 
     @BeforeAll
-    public static void setupTestData() throws IOException, InterruptedException {
+    public static void setupTestData() throws IOException {
         // Create test data file
         CdbMake cdbMake = new CdbMake();
         cdbMake.start(TEST_CDB_PATH);

@@ -27,9 +27,8 @@ public interface CdbReader extends AutoCloseable {
      *
      * @param key the byte array representing the key to look up
      * @return an Iterator of byte arrays containing all values associated with the key
-     * @throws IOException if an I/O error occurs while reading the database
      */
-    Iterator<byte[]> find(byte[] key) throws IOException;
+    Iterator<byte[]> find(byte[] key);
 
     /**
      * Factory method to create a new CdbReader instance from a file path.
