@@ -1,5 +1,8 @@
 package de.dedee.jcdb;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -30,6 +33,9 @@ import java.util.Objects;
  * </pre>
  */
 class CdbReaderResultIterator implements Iterator<byte[]>, AutoCloseable {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     /**
      * Size of each hash table entry in bytes (4 bytes for hash + 4 bytes for position)
      */
@@ -125,6 +131,7 @@ class CdbReaderResultIterator implements Iterator<byte[]>, AutoCloseable {
             }
             return nextValue != null;
         } catch (IOException e) {
+            logger.error("Error reading value from CDB file", e);
             return false;
         }
     }
@@ -221,6 +228,7 @@ class CdbReaderResultIterator implements Iterator<byte[]>, AutoCloseable {
         int keyLength = buffer.getInt();
         int valueLength = buffer.getInt();
         if (keyLength != key.length) {
+            logger.warn("Error reading value from CDB file, key length mismatch");
             return null;
         }
 
@@ -228,12 +236,14 @@ class CdbReaderResultIterator implements Iterator<byte[]>, AutoCloseable {
         byte[] k = new byte[keyLength];
         channel.read(ByteBuffer.wrap(k), pos + 8);
         if (!Arrays.equals(k, key)) {
+            logger.warn("Error reading value from CDB file, key mismatch");
             return null;
         }
 
         // Read value
         byte[] d = new byte[valueLength];
         if (channel.read(ByteBuffer.wrap(d), pos + 8 + keyLength) != valueLength) {
+            logger.warn("Error reading value from CDB file, value length mismatch");
             return null;
         }
         return d;

@@ -18,8 +18,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CdbReaderConcurrentTests {
     private static final String TEST_CDB_PATH = "test_concurrent.cdb";
@@ -151,6 +150,93 @@ public class CdbReaderConcurrentTests {
                     .allMatch(success -> success);
 
             assertTrue(allSuccessful, "Parallel stream operations completed successfully");
+        }
+    }
+
+    @Test
+    public void testConcurrentGet() throws Exception {
+        // Use the generated test file
+        try (CdbReader cdb = CdbReader.create(Path.of(TEST_CDB_PATH))) {
+
+            int numThreads = 200;
+            int queriesPerThread = 100;
+            ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+            List<Future<Boolean>> futures = new ArrayList<>();
+
+            try {
+                // Submit tasks for concurrent execution
+                for (int i = 0; i < numThreads; i++) {
+                    futures.add(executor.submit(() -> {
+                        try {
+                            for (int j = 0; j < queriesPerThread; j++) {
+                                // Example key to look up - modify based on your test data
+                                byte[] key = ("key-" + j).getBytes();
+                                byte[] expectedValue = ("value-" + j).getBytes();
+
+                                // Check direct get
+                                assertArrayEquals(expectedValue, cdb.get(key), "In thread we detected collision");
+                            }
+                            return true;
+                        } catch (Exception e) {
+                            return false;
+                        }
+                    }));
+                }
+
+                // Wait for all threads to complete and check results
+                for (Future<Boolean> future : futures) {
+                    assertTrue(future.get(30, TimeUnit.SECONDS), "Concurrent get operation failed");
+                }
+            } finally {
+                executor.shutdown();
+                executor.awaitTermination(1, TimeUnit.MINUTES);
+                cdb.close();
+            }
+        }
+    }
+
+    @Test
+    public void testNonExistentKeys() throws Exception {
+        // Use the generated test file
+        try (CdbReader cdb = CdbReader.create(Path.of(TEST_CDB_PATH))) {
+
+            int numThreads = 50;
+            int queriesPerThread = 20;
+            ExecutorService executor = Executors.newFixedThreadPool(numThreads);
+            List<Future<Boolean>> futures = new ArrayList<>();
+
+            try {
+                // Submit tasks for concurrent execution
+                for (int i = 0; i < numThreads; i++) {
+                    futures.add(executor.submit(() -> {
+                        try {
+                            for (int j = 0; j < queriesPerThread; j++) {
+                                // Example non-existent key to look up
+                                byte[] key = ("non-existent-key-" + j).getBytes();
+
+                                // Check direct get
+                                assertNull(cdb.get(key), "Expected null for non-existent key");
+
+                                // Check find method
+                                Iterator<byte[]> results = cdb.find(key);
+                                assertFalse(results.hasNext(), "Expected no results for non-existent key");
+                            }
+                            return true;
+                        } catch (Exception e) {
+                            return false;
+                        }
+                    }));
+                }
+
+                // Wait for all threads to complete and check results
+                for (Future<Boolean> future : futures) {
+                    assertTrue(future.get(30, TimeUnit.SECONDS), "Non-existent key operation failed");
+                }
+            } finally {
+                executor.shutdown();
+                executor.awaitTermination(1, TimeUnit.MINUTES);
+                cdb.close();
+            }
         }
     }
 }

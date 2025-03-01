@@ -8,10 +8,13 @@ repositories {
 }
 
 dependencies {
+    implementation 'org.slf4j:slf4j-api:2.0.7'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testImplementation files('libext/sg-cdb-1.0.4.jar')
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    testImplementation files('libext/sg-cdb-1.0.4.jar')
+   // testRuntimeOnly 'ch.qos.logback:logback-classic:1.5.11'
+    testRuntimeOnly 'org.slf4j:slf4j-simple:2.0.7'
 }
 
 java {
