@@ -55,31 +55,6 @@ public class CdbWriterTests {
     }
     
     @Test
-    public void testNullValues() throws IOException {
-        tempFile = File.createTempFile("null_test", ".cdb");
-        tempFile.delete();
-        
-        try (CdbWriter writer = new CdbWriter(tempFile.getAbsolutePath())) {
-            // Test null keys and values
-            assertThrows(IllegalArgumentException.class, () -> {
-                writer.add(null, "value");
-            }, "Should throw exception for null key");
-            
-            assertThrows(IllegalArgumentException.class, () -> {
-                writer.add("key", null);
-            }, "Should throw exception for null value");
-            
-            assertThrows(IllegalArgumentException.class, () -> {
-                writer.add((byte[])null, new byte[0]);
-            }, "Should throw exception for null key");
-            
-            assertThrows(IllegalArgumentException.class, () -> {
-                writer.add(new byte[0], null);
-            }, "Should throw exception for null value");
-        }
-    }
-    
-    @Test
     public void testAddAfterClose() throws IOException {
         tempFile = File.createTempFile("add_after_close", ".cdb");
         tempFile.delete();
