@@ -1,6 +1,5 @@
 package de.dedee.jcdb;
 
-import com.strangegizmo.cdb.CdbMake;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -22,12 +21,11 @@ public class CdbReaderTests {
     @BeforeAll
     public static void setupTestData() throws IOException {
         // Create test data file
-        CdbMake cdbMake = new CdbMake();
-        cdbMake.start(TEST_CDB_PATH);
-        for (int i = 0; i < 100; i++) {
-            cdbMake.add(("key-" + i).getBytes(), ("value-" + i).getBytes());
+        try (CdbWriter writer = new CdbWriter(TEST_CDB_PATH)) {
+            for (int i = 0; i < 100; i++) {
+                writer.add(("key-" + i).getBytes(), ("value-" + i).getBytes());
+            }
         }
-        cdbMake.finish();
     }
 
     @AfterAll
@@ -49,14 +47,14 @@ public class CdbReaderTests {
     @Test
     public void testWriteAndReadSimpleEntries(@TempDir Path tempDir) throws Exception {
         File cdbFile = tempDir.resolve("simple.cdb").toFile();
-        
+
         // Write test data
         try (CdbWriter writer = new CdbWriter(cdbFile.getPath())) {
             writer.add("key1".getBytes(), "value1".getBytes());
             writer.add("key2".getBytes(), "value2".getBytes());
             writer.add("key3".getBytes(), "value3".getBytes());
         }
-        
+
         // Read and validate
         try (CdbReader reader = CdbReader.create(cdbFile.toPath())) {
             assertArrayEquals("value1".getBytes(), reader.get("key1".getBytes()));
@@ -65,34 +63,33 @@ public class CdbReaderTests {
             assertNull(reader.get("nonexistent".getBytes()));
         }
     }
-    
+
     @Test
     public void testWriteAndReadLargeEntries(@TempDir Path tempDir) throws Exception {
         File cdbFile = tempDir.resolve("large.cdb").toFile();
-        
+
         // Create large test data
         byte[] largeKey = new byte[1024];   // 1KB key
         byte[] largeValue = new byte[1024 * 1024]; // 1MB value
         new Random().nextBytes(largeKey);
         new Random().nextBytes(largeValue);
-        
+
         // Write test data
         try (CdbWriter writer = new CdbWriter(cdbFile.getPath())) {
             writer.add(largeKey, largeValue);
         }
-        
+
         // Read and validate
         try (CdbReader reader = CdbReader.create(cdbFile.toPath())) {
             assertArrayEquals(largeValue, reader.get(largeKey));
         }
     }
-    
-    
+
     @Test
     public void testWriteAndReadHundredEntries(@TempDir Path tempDir) throws Exception {
         File cdbFile = tempDir.resolve("hundred.cdb").toFile();
         Map<String, String> testData = new HashMap<>();
-        
+
         // Create and write 100 entries
         try (CdbWriter writer = new CdbWriter(cdbFile.getPath())) {
             for (int i = 0; i < 100; i++) {
@@ -102,18 +99,16 @@ public class CdbReaderTests {
                 writer.add(key.getBytes(), value.getBytes());
             }
         }
-        
+
         // Read and validate all entries
         try (CdbReader reader = CdbReader.create(cdbFile.toPath())) {
             for (Map.Entry<String, String> entry : testData.entrySet()) {
                 assertArrayEquals(
-                    entry.getValue().getBytes(),
-                    reader.get(entry.getKey().getBytes()),
-                    "Error reading key: " + entry.getKey()
+                        entry.getValue().getBytes(),
+                        reader.get(entry.getKey().getBytes()),
+                        "Error reading key: " + entry.getKey()
                 );
             }
         }
     }
-
-   
 }
