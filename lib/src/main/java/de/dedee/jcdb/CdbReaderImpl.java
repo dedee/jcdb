@@ -63,5 +63,11 @@ class CdbReaderImpl implements CdbReader {
             return iterator.findNext();
         }
     }
+
+    @Override
+    public String getString(String key) throws IOException {
+        byte[] result = get(key.getBytes());
+        return result != null ? new String(result) : null;
+    }
 }
  

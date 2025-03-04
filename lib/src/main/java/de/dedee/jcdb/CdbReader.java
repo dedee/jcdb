@@ -22,6 +22,8 @@ public interface CdbReader extends AutoCloseable {
      */
     byte[] get(byte[] key) throws IOException;
 
+    String getString(String key) throws IOException;
+
     /**
      * Finds all values associated with the given key in the database.
      *
